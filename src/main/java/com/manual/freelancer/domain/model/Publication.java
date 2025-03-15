@@ -1,5 +1,6 @@
 package com.manual.freelancer.domain.model;
 
+import com.manual.freelancer.application.DTO.request.PublicationRequest;
 import com.manual.freelancer.domain.enums.PublicationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -39,9 +40,14 @@ public class Publication {
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Suggestion> suggestions;
 
-    public Publication() {
+    public Publication(PublicationRequest request) {
+        this.user = request.getUser();
+        this.title = request.getTitle();
+        this.description = request.getDescription();
         this.createdAt = ZonedDateTime.now();
         this.status = PublicationStatus.OPEN;
     }
+
+    public Publication() {}
 }
 
