@@ -30,10 +30,10 @@ public class Suggestion {
     private String comment;
 
     @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private ZonedDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private ZonedDateTime updatedAt = ZonedDateTime.now();
+    @Column(name = "updated_at", nullable = true)
+    private ZonedDateTime updatedAt;
 
     public Suggestion() {
     }

@@ -19,13 +19,9 @@ public class Role {
     private String roleName;
 
     @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private ZonedDateTime createdAt;
 
     public Role() {
-    }
-
-    public Role(String roleName) {
-        this.roleName = roleName;
         this.createdAt = ZonedDateTime.now();
     }
 }

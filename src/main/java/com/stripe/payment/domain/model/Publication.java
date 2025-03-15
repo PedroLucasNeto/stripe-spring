@@ -1,5 +1,6 @@
 package com.stripe.payment.domain.model;
 
+import com.stripe.payment.domain.enums.PublicationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,25 +21,27 @@ public class Publication {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(name = "title", nullable = false, length = 100)
     private String title;
 
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "status", nullable = false, length = 50)
-    private String status = "open";
+    @Column(name = "status", nullable = false)
+    private PublicationStatus status;
 
     @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private ZonedDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private ZonedDateTime updatedAt = ZonedDateTime.now();
+    private ZonedDateTime updatedAt;
 
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Suggestion> suggestions;
 
     public Publication() {
+        this.createdAt = ZonedDateTime.now();
+        this.status = PublicationStatus.OPEN;
     }
 }
 
