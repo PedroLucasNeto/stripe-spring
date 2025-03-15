@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "roles")
@@ -11,9 +12,8 @@ import java.time.ZonedDateTime;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Long roleId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;

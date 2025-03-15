@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "suggestions")
@@ -11,9 +12,8 @@ import java.time.ZonedDateTime;
 public class Suggestion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "suggestion_id")
-    private Long suggestionId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "publication_id", nullable = false)

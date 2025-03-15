@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -12,9 +13,8 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
@@ -30,10 +30,10 @@ public class User {
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private ZonedDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private ZonedDateTime updatedAt = ZonedDateTime.now();
+    @Column(name = "updated_at", nullable = true)
+    private ZonedDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Publication> publications;
@@ -42,6 +42,7 @@ public class User {
     private List<Suggestion> suggestions;
 
     public User() {
+        this.createdAt = ZonedDateTime.now();
     }
 }
 

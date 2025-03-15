@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "publications")
@@ -13,9 +14,8 @@ import java.util.List;
 public class Publication {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "publication_id")
-    private Long publicationId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -33,7 +33,7 @@ public class Publication {
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = true)
     private ZonedDateTime updatedAt;
 
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
