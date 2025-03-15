@@ -1,4 +1,4 @@
-package com.stripe.payment;
+package com.manual.freelancer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

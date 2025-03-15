@@ -1,4 +1,4 @@
-package com.stripe.payment.domain.model;
+package com.manual.freelancer.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

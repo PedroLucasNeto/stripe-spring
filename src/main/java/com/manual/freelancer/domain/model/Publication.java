@@ -1,6 +1,6 @@
-package com.stripe.payment.domain.model;
+package com.manual.freelancer.domain.model;
 
-import com.stripe.payment.domain.enums.PublicationStatus;
+import com.manual.freelancer.domain.enums.PublicationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 

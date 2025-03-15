@@ -1,4 +1,4 @@
-package com.stripe.payment.domain.enums;
+package com.manual.freelancer.domain.enums;
 
 public enum PublicationStatus {
     OPEN,
