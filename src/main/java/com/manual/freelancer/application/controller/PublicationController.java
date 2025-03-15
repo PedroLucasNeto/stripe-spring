@@ -18,10 +18,6 @@ public class PublicationController {
     @Autowired
     private PublicationService publicationService;
 
-    public PublicationController(PublicationService publicationService) {
-        this.publicationService = publicationService;
-    }
-
     @PostMapping
     public ResponseEntity<PublicationResponse> createPublication(@RequestBody PublicationRequest publicationRequest) {
         return ResponseEntity.ok(publicationService.createPublication(publicationRequest));
