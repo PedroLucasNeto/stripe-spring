@@ -1,13 +1,13 @@
-package com.stripe.payment;
+package com.manual.freelancer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PaymentApplication {
+public class ManualFreelancerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PaymentApplication.class, args);
+		SpringApplication.run(ManualFreelancerApplication.class, args);
 	}
 
 }
