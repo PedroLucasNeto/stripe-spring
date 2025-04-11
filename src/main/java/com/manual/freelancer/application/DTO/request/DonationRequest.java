@@ -12,4 +12,5 @@ public class DonationRequest {
     private String name;
     private String email;
     private Double amount;
+    private String currency;
 }

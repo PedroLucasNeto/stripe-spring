@@ -10,16 +10,23 @@ import com.stripe.model.Price;
 import com.stripe.model.Product;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentLinkCreateParams;
-// import java.util.Map;
-// import com.stripe.param.checkout.SessionCreateParams;
-// import com.stripe.Stripe;
-// import com.stripe.model.checkout.Session;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.manual.freelancer.domain.model.Donation;
+import com.manual.freelancer.domain.service.DonationService;
+import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.model.checkout.Session;
 
 @RestController
 @RequestMapping("/stripe")
 public class StripeController {
+
+    @Autowired
+    private DonationService donationService;
 
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
@@ -29,30 +36,37 @@ public class StripeController {
     @PostMapping("/receive-donation")
     public ResponseEntity<String> receiveDonation(@RequestBody DonationRequest donation) {
         try {
-            Product product = Product.create(ProductCreateParams.builder()
-                    .setName("Custom Donation")
-                    .build());
-
-            Price price = Price.create(PriceCreateParams.builder()
-                    .setUnitAmount(donation.getAmount().longValue() * 100) // amount in cents
-                    .setCurrency("brl") // or "brl", etc.
-                    .setProduct(product.getId())
-                    .build());
-
-            PaymentLink paymentLink = PaymentLink.create(PaymentLinkCreateParams.builder()
-                    .addLineItem(PaymentLinkCreateParams.LineItem.builder()
-                            .setPrice(price.getId())
-                            .setQuantity(1L)
+            SessionCreateParams params = SessionCreateParams.builder()
+            .setMode(SessionCreateParams.Mode.PAYMENT)
+            .setSuccessUrl("http://localhost:5173/success")
+            .setCancelUrl("http://localhost:5173/cancel")
+            .addLineItem(SessionCreateParams.LineItem.builder()
+                .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
+                    .setCurrency(donation.getCurrency())
+                    .setUnitAmount(donation.getAmount().longValue() * 100)
+                    .setProductData(
+                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                            .setName("Example Donation")
                             .build())
-                    .build());
+                    .build())
+                .setQuantity(1L)
+                .build())
+            .setPaymentIntentData(SessionCreateParams.PaymentIntentData.builder()
+                .putMetadata("userName", donation.getName())
+                .putMetadata("userEmail", donation.getEmail())
+                .putMetadata("currency", donation.getCurrency())
+                .putMetadata("amount", String.valueOf(donation.getAmount()))
+                .build())
+            .build();
+        
+            Session session = Session.create(params);
 
-            return ResponseEntity.ok(paymentLink.getUrl());
-
+            return ResponseEntity.ok(session.getUrl());
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error creating payment link");
+            return ResponseEntity.status(500).body("Error creating checkout session");
         }
-    }
+    };
 
     @PostMapping("/webhook")
     public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload,
@@ -66,15 +80,20 @@ public class StripeController {
                 case "checkout.session.completed":
                     System.out.println("Checkout session completed.");
                     break;
-                case "invoice.payment_succeeded":
-                    System.out.println("Invoice payment succeeded.");
-                    System.out.println("data: " + event.getData());
+                case "payment_intent.succeeded":
+                    JsonObject jsonObject = JsonParser.parseString(payload).getAsJsonObject();
+                    JsonObject data = jsonObject.getAsJsonObject("data");
+                    JsonObject paymentIntent = data.getAsJsonObject("object");
+
+                    JsonObject metadata = paymentIntent.getAsJsonObject("metadata");
+
+                    String userName = metadata.get("userName").getAsString();
+                    String userEmail = metadata.get("userEmail").getAsString();
+                    Double amount = Double.valueOf(metadata.get("amount").getAsString());
+                    String currency = metadata.get("currency").getAsString();
+
+                    donationService.createDonation(userEmail, userName, amount, currency);
                     break;
-                case "customer.subscription.deleted":
-                    System.out.println("Subscription canceled.");
-                    break;
-                case "donation.succeeded":
-                    // donationService.saveDonation();
                 default:
                     break;
             }
@@ -84,68 +103,4 @@ public class StripeController {
             return ResponseEntity.status(400).body("Invalid webhook signature");
         }
     }
-    
-
-    //EXAMPLE OF SENDING RECEIPT
-    // @PostMapping("/receive-donation")
-    // public ResponseEntity<String> sendReceipt(@RequestBody DonationRequest donation) {
-    
-    //     PaymentLinkCreateParams params = PaymentLinkCreateParams.builder()
-    //             .addLineItem(
-    //                     PaymentLinkCreateParams.LineItem.builder()
-    //                             .setPrice(donation.getAmount().toString())
-    //                             .setQuantity(1L)
-    //                             .build())
-    //             .build();
-    
-    //     try {
-    //         PaymentLink paymentLink = PaymentLink.create(params);
-    //         return ResponseEntity.ok(paymentLink.getUrl());
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         return ResponseEntity.status(500).body("Error creating payment link");
-    //     }
-    // }
 }
-
-// @PostMapping("/payment-session")
-// public ResponseEntity<Map<String, String>> createCheckoutSession() {
-// try {
-
-// System.out.println("Creating checkout session..." + Stripe.apiKey);
-
-// long price = 1000L; // $10.00
-// String currency = "usd";
-
-// SessionCreateParams params = SessionCreateParams.builder()
-// .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-// .setSuccessUrl("http://localhost:5173/success")
-// .setCancelUrl("http://localhost:5173/cancel")
-// .addLineItem(
-// SessionCreateParams.LineItem.builder()
-// .setPriceData(
-// SessionCreateParams.LineItem.PriceData.builder()
-// .setCurrency(currency)
-// .setUnitAmount(price)
-// .setRecurring(
-// SessionCreateParams.LineItem.PriceData.Recurring.builder()
-// .setInterval(SessionCreateParams.LineItem.PriceData.Recurring.Interval.MONTH)
-// .build())
-// .setProductData(
-// SessionCreateParams.LineItem.PriceData.ProductData.builder()
-// .setName("Example Subscription")
-// .build())
-// .build())
-// .setQuantity(1L)
-// .build())
-// .build();
-
-// Session session = Session.create(params);
-
-// return ResponseEntity.ok(Map.of("url", session.getUrl()));
-// } catch (Exception e) {
-// e.printStackTrace();
-// return ResponseEntity.status(500).body(Map.of("error", "Error creating
-// checkout session"));
-// }
-// }
