@@ -3,14 +3,13 @@ package com.manual.freelancer.domain.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "suggestions")
+@Table(name = "tb_suggestion")
 @Data
 public class Suggestion {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -23,19 +22,18 @@ public class Suggestion {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "suggested_price", nullable = false)
-    private Double suggestedPrice;
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     @Column(name = "comment")
     private String comment;
 
     @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = true)
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     public Suggestion() {
     }
 }
-

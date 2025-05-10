@@ -4,7 +4,7 @@ import com.manual.freelancer.application.DTO.request.PublicationRequest;
 import com.manual.freelancer.application.DTO.response.PublicationResponse;
 import com.manual.freelancer.domain.enums.PublicationStatus;
 import com.manual.freelancer.domain.model.Publication;
-import com.manual.freelancer.domain.repository.PublicationRepository;
+import com.manual.freelancer.domain.repository.IPublicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +17,11 @@ import java.util.stream.Collectors;
 public class PublicationService {
 
     @Autowired
-    private PublicationRepository publicationRepository;
-
-    public PublicationService(PublicationRepository publicationRepository) {
-        this.publicationRepository = publicationRepository;
-    }
+    private IPublicationRepository publicationRepository;
 
     @Transactional
     public PublicationResponse createPublication(PublicationRequest request) {
-        Publication publication = this.publicationRepository.save(new Publication(request));
+        Publication publication = publicationRepository.save(new Publication(request));
         return new PublicationResponse(publication);
     }
 
