@@ -1,5 +1,6 @@
 package com.manual.freelancer.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class Role {
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
 
+    @JsonIgnore
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 

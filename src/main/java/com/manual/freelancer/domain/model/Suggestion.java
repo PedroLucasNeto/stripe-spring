@@ -1,5 +1,6 @@
 package com.manual.freelancer.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,10 +16,12 @@ public class Suggestion {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publication_id", nullable = false)
     private Publication publication;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -32,6 +35,7 @@ public class Suggestion {
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 
+    @JsonIgnore
     @Column(name = "updated_at", nullable = true)
     private ZonedDateTime updatedAt;
 
