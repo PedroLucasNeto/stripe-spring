@@ -2,13 +2,16 @@ package com.manual.freelancer.domain.service.impl;
 
 import com.manual.freelancer.application.DTO.request.SuggestionRequest;
 import com.manual.freelancer.application.DTO.response.SuggestionResponse;
+import com.manual.freelancer.domain.model.Publication;
 import com.manual.freelancer.domain.model.Suggestion;
+import com.manual.freelancer.domain.repository.PublicationRepository;
 import com.manual.freelancer.domain.repository.SuggestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,14 +21,24 @@ public class SuggestionService {
     @Autowired
     private SuggestionRepository suggestionRepository;
 
-    public SuggestionService(SuggestionRepository suggestionRepository) {
+    @Autowired
+    private PublicationRepository publicationRepository;
+
+    public SuggestionService(SuggestionRepository suggestionRepository, PublicationRepository publicationRepository) {
         this.suggestionRepository = suggestionRepository;
+        this.publicationRepository = publicationRepository;
     }
 
     @Transactional
     public SuggestionResponse createSuggestion(SuggestionRequest request) {
-        Suggestion suggestion = this.suggestionRepository.save(new Suggestion(request));
-        return new SuggestionResponse(suggestion);
+        Optional<Publication> publication = publicationRepository.findById(request.getPublication());
+
+        Suggestion suggestion = new Suggestion(request);
+        suggestion.setPublication(publication.orElse(null));
+
+        Suggestion suggestionSave = this.suggestionRepository.save(suggestion);
+
+        return new SuggestionResponse(suggestionSave);
     }
 
     public List<SuggestionResponse> getAllSuggestions() {
