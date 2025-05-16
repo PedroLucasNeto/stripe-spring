@@ -1,6 +1,7 @@
 package com.manual.freelancer.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.manual.freelancer.application.DTO.request.SuggestionRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -40,6 +41,14 @@ public class Suggestion {
     private ZonedDateTime updatedAt;
 
     public Suggestion() {
+    }
+
+    public Suggestion(SuggestionRequest request) {
+        this.user = request.getUser();
+        this.suggestedPrice = request.getSuggestedPrice();
+        this.comment = request.getComment();
+        this.createdAt = ZonedDateTime.now();
+        this.updatedAt = ZonedDateTime.now();
     }
 }
 
