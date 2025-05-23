@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 public class PublicationResponse {
@@ -19,13 +20,15 @@ public class PublicationResponse {
 
     private String description;
 
-    private List<Suggestion> suggestions;
+    private List<SuggestionResponse> suggestions;
 
     public PublicationResponse(Publication publication) {
         this.user = publication.getUser();
         this.id = publication.getId();
         this.title = publication.getTitle();
         this.description = publication.getDescription();
-        this.suggestions = publication.getSuggestions();
+        this.suggestions = publication.getSuggestions().stream()
+                .map(SuggestionResponse::new)
+                .collect(Collectors.toList());;
     }
 }
