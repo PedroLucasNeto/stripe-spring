@@ -6,10 +6,12 @@ import com.manual.freelancer.domain.model.Publication;
 import com.manual.freelancer.domain.model.Suggestion;
 import com.manual.freelancer.domain.repository.PublicationRepository;
 import com.manual.freelancer.domain.repository.SuggestionRepository;
+import com.manual.freelancer.domain.repository.impl.SuggestionRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +26,16 @@ public class SuggestionService {
     @Autowired
     private PublicationRepository publicationRepository;
 
-    public SuggestionService(SuggestionRepository suggestionRepository, PublicationRepository publicationRepository) {
+    @Autowired
+    private SuggestionRepositoryImpl suggestionRepositoryImpl;
+
+    public SuggestionService(
+            SuggestionRepository suggestionRepository,
+            SuggestionRepositoryImpl suggestionRepositoryImpl,
+            PublicationRepository publicationRepository
+    ) {
         this.suggestionRepository = suggestionRepository;
+        this.suggestionRepositoryImpl = suggestionRepositoryImpl;
         this.publicationRepository = publicationRepository;
     }
 
@@ -33,12 +43,22 @@ public class SuggestionService {
     public SuggestionResponse createSuggestion(SuggestionRequest request) {
         Optional<Publication> publication = publicationRepository.findById(request.getPublication());
 
-        Suggestion suggestion = new Suggestion(request);
-        suggestion.setPublication(publication.orElse(null));
+        if (publication.isEmpty()) {
+            throw new IllegalArgumentException("Publicação não encontrada: " + request.getPublication());
+        }
 
-        Suggestion suggestionSave = this.suggestionRepository.save(suggestion);
+        UUID id = UUID.randomUUID();
 
-        return new SuggestionResponse(suggestionSave);
+        suggestionRepositoryImpl.insertSuggestion(
+                id,
+                publication.get().getId(),
+                request.getUser().getId(),
+                request.getSuggestedPrice(),
+                ZonedDateTime.now(),
+                ZonedDateTime.now(),
+                request.getComment()
+        );
+        return new SuggestionResponse(id, new Suggestion(request));
     }
 
     public List<SuggestionResponse> getAllSuggestions() {

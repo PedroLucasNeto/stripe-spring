@@ -23,4 +23,12 @@ public class SuggestionResponse {
         this.suggestedPrice = suggestion.getSuggestedPrice();
         this.comment = suggestion.getComment();
     }
+
+    public SuggestionResponse(UUID id, Suggestion suggestion) {
+        this.id = id;
+        this.user = suggestion.getUser();
+        this.id = suggestion.getId();
+        this.suggestedPrice = suggestion.getSuggestedPrice();
+        this.comment = suggestion.getComment();
+    }
 }
