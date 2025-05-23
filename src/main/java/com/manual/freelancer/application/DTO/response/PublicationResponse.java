@@ -27,8 +27,10 @@ public class PublicationResponse {
         this.id = publication.getId();
         this.title = publication.getTitle();
         this.description = publication.getDescription();
-        this.suggestions = publication.getSuggestions().stream()
-                .map(SuggestionResponse::new)
-                .collect(Collectors.toList());;
+        if (publication.getSuggestions() != null) {
+            this.suggestions = publication.getSuggestions().stream()
+                    .map(SuggestionResponse::new)
+                    .collect(Collectors.toList());
+        }
     }
 }

@@ -5,10 +5,12 @@ import com.manual.freelancer.application.DTO.response.PublicationResponse;
 import com.manual.freelancer.domain.enums.PublicationStatus;
 import com.manual.freelancer.domain.model.Publication;
 import com.manual.freelancer.domain.repository.PublicationRepository;
+import com.manual.freelancer.domain.repository.impl.PublicationRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,14 +21,29 @@ public class PublicationService {
     @Autowired
     private PublicationRepository publicationRepository;
 
-    public PublicationService(PublicationRepository publicationRepository) {
+    @Autowired
+    private PublicationRepositoryImpl publicationRepositoryImpl;
+
+    public PublicationService(
+            PublicationRepository publicationRepository,
+            PublicationRepositoryImpl publicationRepositoryImpl
+    ) {
         this.publicationRepository = publicationRepository;
+        this.publicationRepositoryImpl = publicationRepositoryImpl;
     }
 
     @Transactional
     public PublicationResponse createPublication(PublicationRequest request) {
-        Publication publication = this.publicationRepository.save(new Publication(request));
-        return new PublicationResponse(publication);
+        publicationRepositoryImpl.insertPublication(
+                UUID.randomUUID(),
+                request.getUser().getId(),
+                request.getTitle(),
+                request.getDescription(),
+                1,
+                ZonedDateTime.now(),
+                ZonedDateTime.now()
+        );
+        return new PublicationResponse(new Publication(request));
     }
 
     public List<PublicationResponse> getAllPublications() {
