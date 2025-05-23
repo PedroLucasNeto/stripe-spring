@@ -33,4 +33,16 @@ public class PublicationResponse {
                     .collect(Collectors.toList());
         }
     }
+
+    public PublicationResponse(UUID id, Publication publication) {
+        this.user = publication.getUser();
+        this.id = id;
+        this.title = publication.getTitle();
+        this.description = publication.getDescription();
+        if (publication.getSuggestions() != null) {
+            this.suggestions = publication.getSuggestions().stream()
+                    .map(SuggestionResponse::new)
+                    .collect(Collectors.toList());
+        }
+    }
 }

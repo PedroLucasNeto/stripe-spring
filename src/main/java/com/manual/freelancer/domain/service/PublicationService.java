@@ -34,8 +34,10 @@ public class PublicationService {
 
     @Transactional
     public PublicationResponse createPublication(PublicationRequest request) {
+        UUID id = UUID.randomUUID();
+
         publicationRepositoryImpl.insertPublication(
-                UUID.randomUUID(),
+                id,
                 request.getUser().getId(),
                 request.getTitle(),
                 request.getDescription(),
@@ -43,7 +45,7 @@ public class PublicationService {
                 ZonedDateTime.now(),
                 ZonedDateTime.now()
         );
-        return new PublicationResponse(new Publication(request));
+        return new PublicationResponse(id, new Publication(request));
     }
 
     public List<PublicationResponse> getAllPublications() {
