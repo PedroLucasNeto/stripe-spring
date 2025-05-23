@@ -4,10 +4,14 @@ import com.manual.freelancer.domain.model.Suggestion;
 import com.manual.freelancer.domain.model.User;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class SuggestionResponse {
 
     private User user;
+
+    private UUID id;
 
     private Double suggestedPrice;
 
@@ -15,6 +19,7 @@ public class SuggestionResponse {
 
     public SuggestionResponse(Suggestion suggestion) {
         this.user = suggestion.getUser();
+        this.id = suggestion.getId();
         this.suggestedPrice = suggestion.getSuggestedPrice();
         this.comment = suggestion.getComment();
     }
